@@ -2,7 +2,6 @@ package chainstore
 
 import (
 	"errors"
-	"io/ioutil"
 	"regexp"
 )
 
@@ -141,9 +140,4 @@ func IsValidKey(key string) bool {
 	// TODO: should this regexp be prebuilt..?
 	m, _ := regexp.MatchString(`(i?)[^a-z0-9\/_\-:\.]`, key)
 	return !m && len(key) <= MAX_KEY_LEN
-}
-
-func TempDir() string {
-	path, _ := ioutil.TempDir("", "chainstore-")
-	return path
 }

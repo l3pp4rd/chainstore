@@ -2,12 +2,11 @@ package filestore
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/pressly/chainstore"
 )
 
 type fileStore struct {
@@ -79,7 +78,7 @@ func (s *fileStore) Get(key string) (val []byte, err error) {
 
 func (s *fileStore) Del(key string) (err error) {
 	if string(key[0]) == "/" {
-		return chainstore.ErrInvalidKey
+		return fmt.Errorf("The key is not valid, cannot remove base path.")
 	}
 	fp := filepath.Join(s.storePath, key)
 	err = os.Remove(fp)

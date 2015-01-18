@@ -1,14 +1,12 @@
-package lrumgr
+package chainstore
 
 import (
 	"container/list"
 	"errors"
-
-	"github.com/pressly/chainstore"
 )
 
-type LruManager struct {
-	store    chainstore.Store
+type lruManager struct {
+	store    Store
 	capacity int64 // in bytes
 	cushion  int64 // 10% of bytes of the capacity, to free up this much if it hits
 
@@ -22,9 +20,8 @@ type lruItem struct {
 	listElement *list.Element
 }
 
-// TODO: should lruManager support a chain of passed stores..?
-func New(capacity int64, store chainstore.Store) *LruManager {
-	return &LruManager{
+func LruCacheable(capacity int64, store Store) Store {
+	return &lruManager{
 		store:    store,
 		capacity: capacity,
 		cushion:  int64(float64(capacity) * 0.1),
@@ -33,7 +30,7 @@ func New(capacity int64, store chainstore.Store) *LruManager {
 	}
 }
 
-func (m *LruManager) Open() (err error) {
+func (m *lruManager) Open() (err error) {
 	if m.capacity < 10 {
 		return errors.New("Invalid capacity, must be >= 10 bytes")
 	}
@@ -50,11 +47,11 @@ func (m *LruManager) Open() (err error) {
 	return
 }
 
-func (m *LruManager) Close() (err error) {
+func (m *lruManager) Close() (err error) {
 	return m.store.Close()
 }
 
-func (m *LruManager) Put(key string, val []byte) (err error) {
+func (m *lruManager) Put(key string, val []byte) (err error) {
 	defer m.prune() // free up space
 
 	valSize := int64(len(val))
@@ -73,7 +70,7 @@ func (m *LruManager) Put(key string, val []byte) (err error) {
 	return m.store.Put(key, val)
 }
 
-func (m *LruManager) Get(key string) (val []byte, err error) {
+func (m *lruManager) Get(key string) (val []byte, err error) {
 	val, err = m.store.Get(key)
 	valSize := len(val)
 	if item, exists := m.items[key]; exists {
@@ -84,45 +81,31 @@ func (m *LruManager) Get(key string) (val []byte, err error) {
 	return
 }
 
-func (m *LruManager) Del(key string) (err error) {
+func (m *lruManager) Del(key string) (err error) {
 	if item, exists := m.items[key]; exists {
 		m.evict(item)
 	}
 	return m.store.Del(key)
 }
 
-//--
-
-func (m *LruManager) Capacity() int64 {
-	return m.capacity
-}
-
-func (m *LruManager) Cushion() int64 {
-	return m.cushion
-}
-
-func (m *LruManager) NumItems() int {
-	return m.list.Len()
-}
-
-func (m *LruManager) addItem(key string, size int64) {
+func (m *lruManager) addItem(key string, size int64) {
 	item := &lruItem{key: key, size: size}
 	item.listElement = m.list.PushFront(item)
 	m.items[key] = item
 	m.capacity -= size
 }
 
-func (m *LruManager) promote(item *lruItem) {
+func (m *lruManager) promote(item *lruItem) {
 	m.list.MoveToFront(item.listElement)
 }
 
-func (m *LruManager) evict(item *lruItem) {
+func (m *lruManager) evict(item *lruItem) {
 	m.list.Remove(item.listElement)
 	delete(m.items, item.key)
 	m.capacity += item.size
 }
 
-func (m *LruManager) prune() {
+func (m *lruManager) prune() {
 	if m.capacity > 0 {
 		return
 	}

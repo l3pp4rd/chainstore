@@ -1,24 +1,24 @@
-package metricsmgr
+package chainstore
 
 import (
 	"fmt"
 	"time"
 
-	"github.com/pressly/chainstore"
 	"github.com/rcrowley/go-metrics"
 )
 
+// @TODO: is this really necessary? could be just an example
 type metricsManager struct {
 	namespace string
 	registry  metrics.Registry
-	chain     chainstore.Store
+	chain     Store
 }
 
-func New(namespace string, registry metrics.Registry, stores ...chainstore.Store) *metricsManager {
+func Metricable(namespace string, registry metrics.Registry, store Store) Store {
 	return &metricsManager{
 		namespace: namespace,
 		registry:  registry,
-		chain:     chainstore.New(stores...),
+		chain:     store,
 	}
 }
 
