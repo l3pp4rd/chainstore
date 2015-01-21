@@ -15,7 +15,7 @@ type fileStore struct {
 	perm      os.FileMode // Default: 0755
 }
 
-func New(storePath string, perm os.FileMode) *fileStore {
+func New(storePath string, perm os.FileMode) chainstore.Store {
 	if perm == 0 {
 		perm = 0755
 	}

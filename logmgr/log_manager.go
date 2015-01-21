@@ -3,6 +3,8 @@ package logmgr
 import (
 	"fmt"
 	"log"
+
+	"github.com/pressly/chainstore"
 )
 
 type logManager struct {
@@ -13,7 +15,7 @@ type logManager struct {
 // NOTE: this will chirp too often when put`ing back up the chain
 // after a get. we may need to make somedistinction between stores and mangers
 
-func New(logger *log.Logger, tag string) *logManager {
+func New(logger *log.Logger, tag string) chainstore.Store {
 	if tag != "" {
 		tag = fmt.Sprintf(" [%s]", tag)
 	}

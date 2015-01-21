@@ -3,6 +3,7 @@ package levelstore
 import (
 	"os"
 
+	"github.com/pressly/chainstore"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
@@ -12,7 +13,7 @@ type levelStore struct {
 	opened    bool
 }
 
-func New(storePath string) *levelStore {
+func New(storePath string) chainstore.Store {
 	return &levelStore{storePath: storePath}
 }
 

@@ -23,7 +23,7 @@ type lruItem struct {
 }
 
 // TODO: should lruManager support a chain of passed stores..?
-func New(capacity int64, store chainstore.Store) *LruManager {
+func New(capacity int64, store chainstore.Store) chainstore.Store {
 	return &LruManager{
 		store:    store,
 		capacity: capacity,

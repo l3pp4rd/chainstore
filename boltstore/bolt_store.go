@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/boltdb/bolt"
+	"github.com/pressly/chainstore"
 )
 
 type boltStore struct {
@@ -16,7 +17,7 @@ type boltStore struct {
 	opened bool
 }
 
-func New(storePath string, bucketName string) *boltStore {
+func New(storePath string, bucketName string) chainstore.Store {
 	return &boltStore{storePath: storePath, bucketName: []byte(bucketName)}
 }
 

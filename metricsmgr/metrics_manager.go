@@ -14,7 +14,7 @@ type metricsManager struct {
 	chain     chainstore.Store
 }
 
-func New(namespace string, registry metrics.Registry, stores ...chainstore.Store) *metricsManager {
+func New(namespace string, registry metrics.Registry, stores ...chainstore.Store) chainstore.Store {
 	return &metricsManager{
 		namespace: namespace,
 		registry:  registry,

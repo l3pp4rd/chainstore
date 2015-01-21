@@ -3,6 +3,7 @@ package memstore
 import (
 	"sync"
 
+	"github.com/pressly/chainstore"
 	"github.com/pressly/chainstore/lrumgr"
 )
 
@@ -11,7 +12,7 @@ type memStore struct {
 	data map[string][]byte
 }
 
-func New(capacity int64) *lrumgr.LruManager {
+func New(capacity int64) chainstore.Store {
 	memStore := &memStore{data: make(map[string][]byte, 1000)}
 	store := lrumgr.New(capacity, memStore)
 	return store

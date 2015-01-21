@@ -3,6 +3,7 @@ package s3store
 import (
 	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/s3"
+	"github.com/pressly/chainstore"
 )
 
 type s3Store struct {
@@ -13,7 +14,7 @@ type s3Store struct {
 	opened bool
 }
 
-func New(bucketId string, accessKey string, secretKey string) *s3Store {
+func New(bucketId string, accessKey string, secretKey string) chainstore.Store {
 	return &s3Store{BucketId: bucketId, AccessKey: accessKey, SecretKey: secretKey}
 }
 
